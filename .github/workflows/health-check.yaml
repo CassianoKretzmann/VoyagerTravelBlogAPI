@@ -1,0 +1,20 @@
+name: Health Check
+
+on:
+  workflow_call:
+
+jobs:
+  health_check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check Azure Web App Health
+      run: |
+        health_check_url="${{ secrets.AZURE_WEBAPP_URL }}/health"
+        response=$(curl -sS -o /dev/null -w "%{http_code}" $health_check_url)
+        if [ $response == "200" ]; then
+          echo "✅ Application is healthy and responding at $health_check_url"
+          exit 0
+        else
+          echo "❌ Application is not healthy. HTTP status code: $response"
+          exit 1
+        fi

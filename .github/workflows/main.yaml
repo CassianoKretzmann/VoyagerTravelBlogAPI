@@ -1,0 +1,75 @@
+name: CI/CD Pipeline
+
+on:
+  # Disabled temporarily - change back to 'master' to re-enable
+  push:
+    branches: 
+      - disabled
+
+jobs:
+  # Check if anything was changed
+  check_paths:
+    uses: ./.github/workflows/path-check.yaml
+
+  terraform:
+    needs: check_paths
+    if: needs.check_paths.outputs.infrastructure_changed == 'true'
+    uses: ./.github/workflows/terraform.yaml
+    secrets: inherit
+
+  # Build and test project
+  build_and_test:
+    needs: [check_paths, terraform]
+    if: |
+      always() &&
+      needs.terraform.result != 'failed' &&
+      needs.check_paths.outputs.api_changed == 'true' ||
+      needs.check_paths.outputs.db_changed == 'true' ||
+      needs.check_paths.outputs.infrastructure_changed == 'true' ||
+      needs.check_paths.outputs.config_changed == 'true'
+    uses: ./.github/workflows/build_and_test.yaml
+    secrets: inherit
+
+  # Build and Push Docker image
+  docker_build:
+    needs: build_and_test
+    if: |
+      always() &&
+      needs.build_and_test.result == 'success'
+    uses: ./.github/workflows/build-docker-image.yaml
+    with:
+      image_name: ${{ vars.CONTAINER_NAME }}
+      dockerfile_path: "./Dockerfile"
+    secrets: inherit
+
+  # Deploy
+  deploy:
+    needs: docker_build
+    if: |
+      always() &&
+      needs.docker_build.result == 'success'
+    uses: ./.github/workflows/deploy-api.yaml
+    with:
+      image_tag: ${{ needs.docker_build.outputs.image_tag }}
+    secrets: inherit
+
+  # Apply Migrations
+  migrate_database:
+    needs: deploy
+    if: | 
+      always() &&
+      needs.deploy.result == 'success' &&
+      needs.check_paths.outputs.db_changed == 'true'
+    uses: ./.github/workflows/db-migrate.yaml
+    with:
+      environment: Production
+    secrets: inherit
+
+  # Check App health
+  health_check:
+    needs: deploy
+    if: |
+      always() &&
+      needs.deploy.result == 'success'
+    uses: ./.github/workflows/health-check.yaml
+    secrets: inherit

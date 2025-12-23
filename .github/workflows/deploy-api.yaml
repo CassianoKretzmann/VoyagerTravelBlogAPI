@@ -1,0 +1,44 @@
+name: Deploy to Azure Container Apps
+
+on:
+  workflow_call:
+    inputs:
+      image_tag:
+        required: true
+        type: string
+    outputs:
+      image_tag:
+        description: "The web app URL"
+        value: ${{ jobs.deploy.outputs.app_url }}
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    outputs:
+      app_url: ${{ steps.get_url.outputs.value }}
+    
+    steps:
+    # Login to Azure
+    - name: Login to Azure
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # Deploy Azure web app
+    - name: Deploy Azure web app
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: ${{ vars.CONTAINER_NAME }}
+        images: ${{ vars.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ vars.CONTAINER_NAME }}:${{ inputs.image_tag }}
+
+    # Echo App URL
+    - name: Get Container App URL
+      id: get_url
+      run: |
+        APP_URL=$(az containerapp show \
+        --name ${{ vars.CONTAINER_NAME }} \
+        --resource-group ${{ vars.RESOURCE_GROUP }} \
+        --query "properties.configuration.ingress.fqdn" \
+        --output tsv)
+        echo "APP_URL=$APP_URL" >> $GITHUB_OUTPUT

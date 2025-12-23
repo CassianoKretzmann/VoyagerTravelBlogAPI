@@ -1,0 +1,51 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35514.174
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoyagerTravelBlog.Infrastructure", "VoyagerTravelBlog.Infrastructure\VoyagerTravelBlog.Infrastructure.csproj", "{E49E3777-A0C4-4EC7-A2CF-BCA788BE24D3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoyagerTravelBlog.Domain", "VoyagerTravelBlog.Domain\VoyagerTravelBlog.Domain.csproj", "{2AEEE2AD-D042-48A0-B8CC-AA43026F875D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoyagerTravelBlog.Application", "VoyagerTravelBlog.Application\VoyagerTravelBlog.Application.csproj", "{17173228-12DC-4F7D-8F9F-BE1068FDD369}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoyagerTravelBlog.Api", "VoyagerTravelBlog.Api\VoyagerTravelBlog.Api.csproj", "{5A72317F-4C53-4845-9BD0-6E3E5580DEC4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9B1739F8-0C8D-4741-AE3B-4BD89A0808C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoyagerTravelBlog.Infrastructure.Tests", "tests\VoyagerTravelBlog.Infrastructure.Tests\VoyagerTravelBlog.Infrastructure.Tests.csproj", "{B03725FA-015B-4F22-BC94-4C48B29D0012}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E49E3777-A0C4-4EC7-A2CF-BCA788BE24D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E49E3777-A0C4-4EC7-A2CF-BCA788BE24D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E49E3777-A0C4-4EC7-A2CF-BCA788BE24D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E49E3777-A0C4-4EC7-A2CF-BCA788BE24D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AEEE2AD-D042-48A0-B8CC-AA43026F875D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AEEE2AD-D042-48A0-B8CC-AA43026F875D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AEEE2AD-D042-48A0-B8CC-AA43026F875D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AEEE2AD-D042-48A0-B8CC-AA43026F875D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17173228-12DC-4F7D-8F9F-BE1068FDD369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17173228-12DC-4F7D-8F9F-BE1068FDD369}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17173228-12DC-4F7D-8F9F-BE1068FDD369}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17173228-12DC-4F7D-8F9F-BE1068FDD369}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A72317F-4C53-4845-9BD0-6E3E5580DEC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A72317F-4C53-4845-9BD0-6E3E5580DEC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A72317F-4C53-4845-9BD0-6E3E5580DEC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A72317F-4C53-4845-9BD0-6E3E5580DEC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B03725FA-015B-4F22-BC94-4C48B29D0012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B03725FA-015B-4F22-BC94-4C48B29D0012}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B03725FA-015B-4F22-BC94-4C48B29D0012}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B03725FA-015B-4F22-BC94-4C48B29D0012}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B03725FA-015B-4F22-BC94-4C48B29D0012} = {9B1739F8-0C8D-4741-AE3B-4BD89A0808C1}
+	EndGlobalSection
+EndGlobal

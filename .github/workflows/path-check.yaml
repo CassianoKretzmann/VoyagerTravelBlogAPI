@@ -1,0 +1,68 @@
+name: Check changes
+
+on:
+  workflow_call:
+    outputs:
+      api_changed:
+        description: "Changes detected in API code"
+        value: ${{ jobs.check_paths.outputs.api_changed }}
+      db_changed:
+        description: "Changes detected in database code"
+        value: ${{ jobs.check_paths.outputs.db_changed }}
+      infrastructure_changed: 
+        description: "Changes detected in infrastructure"
+        value: ${{ jobs.check_paths.outputs.infrastructure_changed }}
+      config_changed: 
+        description: "Changes detected in configurations"
+        value: ${{ jobs.check_paths.outputs.config_changed }}
+
+jobs:
+  check_paths:
+    runs-on: ubuntu-latest
+    outputs:
+      api_changed: ${{ steps.filter.outputs.api }}
+      db_changed: ${{ steps.filter.outputs.db }}
+      infrastructure_changed: ${{ steps.filter.outputs.infrastructure }}
+      config_changed: ${{ steps.filter.outputs.config }}
+      
+    steps:
+    # Checkout source code
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Required for path filtering
+        
+    # Filter paths    
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          api:
+            - '**/*.cs'
+            - '**/*.csproj'
+            - '**/Controllers/**'
+            - '**/Services/**'
+            - '**/Dtos/**'
+          db:
+            - '**/Migrations/**'
+            - '**/Data/**'
+            - '**/Configurations/**'
+            - '**/BlogDbContext.cs'
+          infrastructure:
+            - 'infrastructure-azure/**'
+            - 'terraform/**'
+            - 'Dockerfile'
+            - 'docker-compose*.yml'
+          config:
+            - '**/*.json'
+            - '**/*.yml'
+            - '**/*.yaml'
+            - '**/appsettings*.json'
+            - '.github/workflows/**'
+
+    # Echo results
+    - name: Debug Output
+      run: |
+        echo "API changed: ${{ steps.filter.outputs.api }}"
+        echo "DB changed: ${{ steps.filter.outputs.db }}"
+        echo "Infrastructure changed: ${{ steps.filter.outputs.infrastructure }}"
+        echo "Config changed: ${{ steps.filter.outputs.config }}"

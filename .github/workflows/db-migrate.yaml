@@ -1,0 +1,67 @@
+name: Database Migrations
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Checkout source code
+    - uses: actions/checkout@v3
+    
+    # Setup .Net
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    # Login to Azure
+    - name: Login to Azure
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    # Install EF Core tools
+    - name: Install EF Core tools
+      run: dotnet tool install --global dotnet-ef
+
+    # Get GitHub Actions IP
+    - name: Get GitHub Actions IP
+      id: ip
+      uses: haythem/public-ip@v1.2
+
+    # Create a firewall rule using the GitHub IP
+    - name: Configure Azure SQL Firewall
+      run: |
+        az sql server firewall-rule create \
+          --resource-group ${{ vars.RESOURCE_GROUP }} \
+          --server ${{ secrets.SQL_SERVER_NAME }} \
+          --name GithubActionsRunner \
+          --start-ip-address ${{ steps.ip.outputs.ipv4 }} \
+          --end-ip-address ${{ steps.ip.outputs.ipv4 }}
+
+    # Run migrations
+    - name: Run database migrations
+      run: |
+        dotnet ef database update \
+          --startup-project ./VoyagerTravelBlog.Api \
+          --project ./VoyagerTravelBlog.Infrastructure \
+          --context BlogDbContext \
+          --connection "${{ secrets.DB_CONNECTION_STRING }}"
+      env:
+        ASPNETCORE_ENVIRONMENT: ${{ inputs.environment }}
+
+    # Remove the firewall rule for GitHub
+    - name: Remove Azure SQL Firewall Rule
+      if: always()
+      run: |
+        az sql server firewall-rule delete \
+          --resource-group ${{ vars.RESOURCE_GROUP }} \
+          --server ${{ secrets.SQL_SERVER_NAME }} \
+          --name GithubActionsRunner

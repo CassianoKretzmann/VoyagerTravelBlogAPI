@@ -1,0 +1,50 @@
+name: Pull Request Validation
+
+on:
+  pull_request:
+    types: 
+      - opened
+      - synchronize
+      - reopened
+    branches: 
+      - master
+
+jobs:
+  # Check if anything was changed
+  check_paths:
+    uses: ./.github/workflows/path-check.yaml
+
+  # Echo the changes
+  validate:
+    needs: check_paths
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Summary of Changes
+      run: |
+        echo "## Changes Detection Summary" >> $GITHUB_STEP_SUMMARY
+        echo "🔍 The following changes were detected:" >> $GITHUB_STEP_SUMMARY
+        echo "- API Changes: ${{ needs.check_paths.outputs.api_changed }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Database Changes: ${{ needs.check_paths.outputs.db_changed }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Infrastructure Changes: ${{ needs.check_paths.outputs.infrastructure_changed }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Configuration Changes: ${{ needs.check_paths.outputs.config_changed }}" >> $GITHUB_STEP_SUMMARY
+
+  # Check and Plan Terraform
+  plan_check_terraform:
+    needs: validate
+    if: needs.check_paths.outputs.infrastructure_changed == 'true'
+    uses: ./.github/workflows/terraform.yaml
+    secrets: inherit
+
+  # Build and test the PR
+  build_pr:
+    needs: [validate, plan_check_terraform]
+    if: |
+      always() &&
+      needs.plan_check_terraform.result != 'failed' &&
+      needs.check_paths.outputs.api_changed == 'true' ||
+      needs.check_paths.outputs.db_changed == 'true' ||
+      needs.check_paths.outputs.infrastructure_changed == 'true' ||
+      needs.check_paths.outputs.config_changed == 'true'
+    uses: ./.github/workflows/build_and_test.yaml
+    secrets: inherit

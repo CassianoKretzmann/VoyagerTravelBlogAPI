@@ -1,0 +1,39 @@
+services:
+  sql:
+    image: "mcr.microsoft.com/azure-sql-edge"
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=1
+      - MSSQL_SA_PASSWORD=voyagerblogLocalDev!
+    volumes:
+      - sqldata:/var/opt/mssql
+
+  voyagerblogapi:
+    image: voyagerblogapi
+    build:
+      context: .
+    ports:
+      - "5011:8080"
+    depends_on:
+      - "sql"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__BlogConnectionString=Server=sql;Database=voyagerblog;User Id=sa;Password=voyagerblogLocalDev!;TrustServerCertificate=True;
+
+  migrations:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - "sql"
+    environment:
+      - ConnectionStrings__BlogConnectionString=Server=sql;Database=voyagerblog;User Id=sa;Password=voyagerblogLocalDev!;TrustServerCertificate=True;
+    command: ["dotnet", "ef", "database", "update", "--project", "./VoyagerTravelBlog.Infrastructure", "--startup-project", "./VoyagerTravelBlog.Api"]
+
+networks:
+  default:
+    name: voyagerblog-network
+
+volumes:
+  sqldata:
