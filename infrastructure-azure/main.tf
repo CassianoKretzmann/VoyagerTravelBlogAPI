@@ -146,7 +146,7 @@ module "voyagerblog-appservice_domain" {
   source            = "./modules/appservice_domain"
   rg_name           = var.rg_name
   location          = var.region_name
-  dns_name          = "poatekvoyagerblog.com"
+  dns_name          = "voyagerblog.com"
   c_name            = "www"
   default_host_name = module.voyagerblog-staticwebapp-ui.default_hostname
   static_webapp_id  = module.voyagerblog-staticwebapp-ui.id
