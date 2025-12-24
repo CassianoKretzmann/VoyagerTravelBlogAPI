@@ -54,7 +54,7 @@ jobs:
       uses: trstringer/manual-approval@v1
       with:
         secret: ${{ github.TOKEN }}
-        approvers: cassiano-kretzmann,michaelpoatek
+        approvers: #approver-user
         minimum-approvals: 1
         issue-title: 'Applying Terraform to environment'
         issue-body: "Please verify the 'Terraform Plan' result from the previous step before approving this deployment."
